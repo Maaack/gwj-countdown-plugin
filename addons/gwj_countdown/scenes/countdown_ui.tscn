@@ -8,7 +8,7 @@ font_weight = 800
 subpixel_positioning = 0
 
 [node name="CountdownUI" type="Control"]
-custom_minimum_size = Vector2(400, 0)
+custom_minimum_size = Vector2(448, 0)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
