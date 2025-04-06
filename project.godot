@@ -10,9 +10,13 @@ config_version=5
 
 [application]
 
-config/name="GWJ Countdown Plugin"
+config/name="Godot Wild Jam Countdown"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gwj_countdown/plugin.cfg")
 
 [rendering]
 
