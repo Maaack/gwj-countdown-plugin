@@ -1,8 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://dnvss1ily5njc"]
+[gd_scene load_steps=4 format=3 uid="uid://dnvss1ily5njc"]
 
 [ext_resource type="Script" uid="uid://bj8krsdncedu6" path="res://addons/gwj_countdown/scenes/countdown_ui.gd" id="1_0bnqm"]
+[ext_resource type="Texture2D" uid="uid://lqpny21hjubw" path="res://addons/gwj_countdown/assets/gwj_mascot_vector.svg" id="2_jun1l"]
 
-[sub_resource type="SystemFont" id="SystemFont_0bnqm"]
+[sub_resource type="SystemFont" id="SystemFont_jun1l"]
 font_weight = 800
 subpixel_positioning = 0
 
@@ -16,25 +17,35 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0bnqm")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="StageLabel" type="Label" parent="HBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("2_jun1l")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="StageLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_fonts/font = SubResource("SystemFont_0bnqm")
-text = "Next GWJ Begins:"
 horizontal_alignment = 2
 
-[node name="CountdownLabel" type="Label" parent="HBoxContainer"]
+[node name="CountdownLabel" type="Label" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_jun1l")
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true

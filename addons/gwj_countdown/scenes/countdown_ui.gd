@@ -11,7 +11,7 @@ const SECONDS_PER_HOUR = 3600
 const SECONDS_PER_MINUTE = 60
 const MIN_DAYS_PER_MONTH = 29
 
-const DEFAULT_STAGE_STRING = "Next GWJ Begins"
+const DEFAULT_STAGE_STRING = "Jam Begins"
 const VOTING_STAGE_STRING = "Voting Ends"
 const JAM_STAGE_STRING = "Submission Due"
 
