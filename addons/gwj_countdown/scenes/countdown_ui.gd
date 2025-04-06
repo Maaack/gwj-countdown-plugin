@@ -15,6 +15,10 @@ const DEFAULT_STAGE_STRING = "Jam Begins"
 const VOTING_STAGE_STRING = "Voting Ends"
 const JAM_STAGE_STRING = "Submission Due"
 
+const JAM_LINK_PREFIX = "https://itch.io/jam/godot-wild-jam-"
+const JAM_FIRST_MONTH = 9
+const JAM_FIRST_YEAR = 2018
+
 @onready var stage_label = %StageLabel
 @onready var countdown_label = %CountdownLabel
 
@@ -103,8 +107,18 @@ func refresh_text():
 		stage_label.text = DEFAULT_STAGE_STRING
 	countdown_label.text = _get_countdown_string(delta_time_unix)
 
+func _open_current_jam_page():
+	var current_time_dict := Time.get_datetime_dict_from_system(true)
+	var month_diff = current_time_dict["month"] - JAM_FIRST_MONTH
+	var year_diff = current_time_dict["year"] - JAM_FIRST_YEAR
+	var current_jam_index = month_diff + (year_diff * 12) + 1
+	var _err = OS.shell_open("%s%d" % [JAM_LINK_PREFIX, current_jam_index])
+
 func _on_timer_timeout():
 	refresh_text()
+
+func _on_texture_rect_pressed():
+	_open_current_jam_page()
 
 func _ready():
 	refresh_text()
