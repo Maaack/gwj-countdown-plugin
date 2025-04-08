@@ -13,7 +13,7 @@ const MIN_DAYS_PER_MONTH = 29
 
 const DEFAULT_STAGE_STRING = "Jam Begins"
 const VOTING_STAGE_STRING = "Voting Ends"
-const JAM_STAGE_STRING = "Submission Due"
+const JAM_STAGE_STRING = "Jam Ends"
 
 const JAM_LINK_PREFIX = "https://itch.io/jam/godot-wild-jam-"
 const JAM_FIRST_MONTH = 9
