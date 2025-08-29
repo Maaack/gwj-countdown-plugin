@@ -32,7 +32,7 @@ theme_override_constants/margin_right = 16
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="TextureRect" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="JamIconButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -46,14 +46,64 @@ unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="CountdownLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="CountdownButton" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = SubResource("SystemFont_jun1l")
+flat = true
+alignment = 0
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
 
-[connection signal="pressed" from="MarginContainer/HBoxContainer/TextureRect" to="." method="_on_texture_rect_pressed"]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+title = "Adjust deadline"
+initial_position = 1
+size = Vector2i(304, 132)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ConfirmationDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 296.0
+offset_bottom = 83.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TextureRect" type="TextureRect" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture = ExtResource("2_gybcw")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StageOption" type="OptionButton" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+popup/item_0/text = "Jam"
+popup/item_0/id = 0
+popup/item_1/text = "Voting"
+popup/item_1/id = 1
+
+[node name="PlusLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "+"
+
+[node name="DayAdjustment" type="SpinBox" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 15.0
+
+[node name="DaysLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Days"
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/JamIconButton" to="." method="_on_jam_icon_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/CountdownButton" to="." method="_on_countdown_button_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="confirmed" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_confirmed"]
+[connection signal="item_selected" from="ConfirmationDialog/VBoxContainer/HBoxContainer/StageOption" to="." method="_on_stage_option_item_selected"]

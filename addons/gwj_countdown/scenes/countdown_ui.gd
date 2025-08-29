@@ -1,6 +1,7 @@
 @tool
 extends Control
 
+const PROJECT_SETTINGS_PATH = "gwj_countdown/"
 const TARGET_WEEKDAY : = 5
 const TARGET_WEEKDAY_OCCURRENCE : int = 2
 const TARGET_HOUR := 20
@@ -19,14 +20,21 @@ const JAM_LINK_PREFIX = "https://itch.io/jam/godot-wild-jam-"
 const JAM_FIRST_MONTH = 9
 const JAM_FIRST_YEAR = 2018
 
-@onready var stage_label = %StageLabel
-@onready var countdown_label = %CountdownLabel
-
 @export_range(1, 3) var precision : int = 2
+
+@export var jam_extension : int = 0
+@export var voting_extension :  int = 0
 
 @export_group("Debug")
 @export var adjust_days : int = 0
 @export var adjust_hours : int = 0
+@export_tool_button("Refresh text") var refresh_text_action = refresh_text
+
+@onready var stage_label = %StageLabel
+@onready var countdown_button = %CountdownButton
+@onready var confirmation_dialog = $ConfirmationDialog
+@onready var stage_option = %StageOption
+@onready var day_adjustment = %DayAdjustment
 
 func _get_2nd_friday(day : int, weekday : int) -> int:
 	var weekday_diff := weekday - TARGET_WEEKDAY
@@ -34,6 +42,12 @@ func _get_2nd_friday(day : int, weekday : int) -> int:
 	var target_first_day := target_relative_day % 7
 	var target_day = target_first_day + (7 * (TARGET_WEEKDAY_OCCURRENCE - 1))
 	return target_day
+
+func get_jam_time() -> int:
+	return (JAM_DAYS + jam_extension) * SECONDS_PER_DAY
+
+func get_voting_time() -> int:
+	return (VOTING_DAYS + voting_extension) * SECONDS_PER_DAY
 
 func adjust_datetime_dict(datetime_dict : Dictionary) -> Dictionary:
 	var _adjust_days := adjust_days
@@ -51,7 +65,7 @@ func adjust_datetime_dict(datetime_dict : Dictionary) -> Dictionary:
 	return datetime_dict
 
 func _update_dict_to_months_jam(datetime_dict : Dictionary) -> Dictionary:
-	var jam_start_day = _get_2nd_friday(datetime_dict["day"], datetime_dict["weekday"])
+	var jam_start_day := _get_2nd_friday(datetime_dict["day"], datetime_dict["weekday"])
 	datetime_dict["day"] = jam_start_day
 	datetime_dict["weekday"] = TARGET_WEEKDAY
 	datetime_dict["hour"] = TARGET_HOUR
@@ -110,42 +124,92 @@ func _get_countdown_string(delta_time : int) -> String:
 	return countdown_string
 
 func _unix_is_after_jam(unix_time : int) -> bool:
-	return unix_time > (JAM_DAYS + VOTING_DAYS) * SECONDS_PER_DAY
+	return unix_time > get_jam_time() + get_voting_time()
 
 func _unix_is_voting_period(unix_time : int) -> bool:
-	return unix_time > JAM_DAYS * SECONDS_PER_DAY and unix_time <= (JAM_DAYS + VOTING_DAYS) * SECONDS_PER_DAY
+	return unix_time > get_jam_time() and unix_time <= get_jam_time() + get_voting_time()
 
 func _unix_is_jam_period(unix_time : int) -> bool:
-	return unix_time > 0 and unix_time <= JAM_DAYS * SECONDS_PER_DAY
+	return unix_time > 0 and unix_time <= get_jam_time()
 
-func refresh_text():
+func _append_adjusted_flag(stage_idx : int) -> String:
+	match stage_idx:
+		0:
+			if jam_extension > 0: return "(+)"
+		1:
+			if jam_extension + voting_extension > 0: return "(+)"
+	return ""
+
+func get_current_stage() -> int:
+	var time_until_jam := _get_delta_time_until_jam()
+	if _unix_is_after_jam(-time_until_jam):
+		return 2
+	if _unix_is_voting_period(-time_until_jam):
+		return 1
+	elif _unix_is_jam_period(-time_until_jam):
+		return 0
+	return -1
+
+func refresh_text() -> void:
 	var delta_time_unix := _get_delta_time_until_jam()
-	if _unix_is_after_jam(-delta_time_unix):
-		# Today is passed the current month's jam. Get next months jam.
-		delta_time_unix = _get_delta_time_until_next_month_jam()
-		stage_label.text = DEFAULT_STAGE_STRING
-	elif _unix_is_voting_period(-delta_time_unix):
-		stage_label.text = VOTING_STAGE_STRING
-		delta_time_unix += (JAM_DAYS + VOTING_DAYS) * SECONDS_PER_DAY
-	elif _unix_is_jam_period(-delta_time_unix):
-		stage_label.text = JAM_STAGE_STRING
-		delta_time_unix += JAM_DAYS * SECONDS_PER_DAY
-	else:
-		stage_label.text = DEFAULT_STAGE_STRING
-	countdown_label.text = _get_countdown_string(delta_time_unix)
+	var stage := get_current_stage()
+	match(stage):
+		0:
+			stage_label.text = JAM_STAGE_STRING
+			delta_time_unix += get_jam_time()
+		1:
+			stage_label.text = VOTING_STAGE_STRING
+			delta_time_unix += get_jam_time() + get_voting_time()
+		2:
+			# Today is passed the current month's jam. Get next months jam.
+			delta_time_unix = _get_delta_time_until_next_month_jam()
+			stage_label.text = DEFAULT_STAGE_STRING
+		_:
+			stage_label.text = DEFAULT_STAGE_STRING
+	countdown_button.text = _get_countdown_string(delta_time_unix) + _append_adjusted_flag(stage)
 
-func _open_current_jam_page():
+func _open_current_jam_page() -> void:
 	var current_time_dict := Time.get_datetime_dict_from_system(true)
 	var month_diff = current_time_dict["month"] - JAM_FIRST_MONTH
 	var year_diff = current_time_dict["year"] - JAM_FIRST_YEAR
 	var current_jam_index = month_diff + (year_diff * 12) + 1
 	var _err = OS.shell_open("%s%d" % [JAM_LINK_PREFIX, current_jam_index])
 
-func _on_timer_timeout():
+func _on_timer_timeout() -> void:
 	refresh_text()
 
-func _on_texture_rect_pressed():
+func _on_jam_icon_button_pressed() -> void:
 	_open_current_jam_page()
 
-func _ready():
+func _ready() -> void:
 	refresh_text()
+
+func _reset_day_adjustment_value(stage_idx: int = 0) -> void:
+	match stage_idx:
+		0:
+			day_adjustment.value = jam_extension
+		1:
+			day_adjustment.value = voting_extension
+
+func _on_countdown_button_pressed() -> void:
+	stage_option.selected = get_current_stage()
+	_reset_day_adjustment_value(stage_option.selected)
+	confirmation_dialog.show()
+
+func _on_confirmation_dialog_confirmed() -> void:
+	match stage_option.selected:
+		0:
+			jam_extension = day_adjustment.value
+		1:
+			voting_extension = day_adjustment.value
+
+func _on_stage_option_item_selected(index) -> void:
+	_reset_day_adjustment_value(index)
+
+func _enter_tree() -> void:
+	jam_extension = ProjectSettings.get_setting(PROJECT_SETTINGS_PATH + 'jam_extension', 0)
+	voting_extension = ProjectSettings.get_setting(PROJECT_SETTINGS_PATH + 'voting_extension', 0)
+
+func _exit_tree() -> void:
+	ProjectSettings.set_setting(PROJECT_SETTINGS_PATH + 'jam_extension', jam_extension)
+	ProjectSettings.set_setting(PROJECT_SETTINGS_PATH + 'voting_extension', voting_extension)
