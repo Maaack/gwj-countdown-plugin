@@ -14,9 +14,18 @@ config/name="Godot Wild Jam Countdown"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gwj_countdown/plugin.cfg")
+
+[gwj_countdown]
+
+jam_extension=0
+voting_extension=0
 
 [rendering]
 
