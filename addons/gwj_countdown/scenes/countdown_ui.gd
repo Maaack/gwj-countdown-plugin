@@ -10,7 +10,7 @@ const VOTING_DAYS = 7
 const SECONDS_PER_DAY = 86400
 const SECONDS_PER_HOUR = 3600
 const SECONDS_PER_MINUTE = 60
-const MIN_DAYS_PER_MONTH = 29
+const DAYS_IN_FOUR_WEEKS = 28
 
 const DEFAULT_STAGE_STRING = "Jam Begins"
 const VOTING_STAGE_STRING = "Voting Ends"
@@ -20,7 +20,7 @@ const JAM_LINK_PREFIX = "https://itch.io/jam/godot-wild-jam-"
 const JAM_FIRST_MONTH = 9
 const JAM_FIRST_YEAR = 2018
 
-@export_range(1, 3) var precision : int = 2
+@export_range(1, 3) var default_precision : int = 2
 
 @export var jam_extension : int = 0
 @export var voting_extension :  int = 0
@@ -31,7 +31,9 @@ const JAM_FIRST_YEAR = 2018
 @export_tool_button("Refresh text") var refresh_text_action = refresh_text
 
 @onready var stage_label = %StageLabel
+@onready var stage_label_2 = %StageLabel2
 @onready var countdown_button = %CountdownButton
+@onready var countdown_label = %CountdownLabel
 @onready var confirmation_dialog = $ConfirmationDialog
 @onready var stage_option = %StageOption
 @onready var day_adjustment = %DayAdjustment
@@ -79,7 +81,7 @@ func _get_delta_time_until_next_month_jam() -> int:
 	var current_time_dict := Time.get_datetime_dict_from_system(true)
 	current_time_dict = adjust_datetime_dict(current_time_dict)
 	var current_time_unix := int(Time.get_unix_time_from_datetime_dict(current_time_dict))
-	var next_month_unix = current_time_unix + (MIN_DAYS_PER_MONTH * SECONDS_PER_DAY)
+	var next_month_unix = current_time_unix + (DAYS_IN_FOUR_WEEKS * SECONDS_PER_DAY)
 	var next_month_dict := Time.get_datetime_dict_from_unix_time(next_month_unix)
 	next_month_dict = _update_dict_to_months_jam(next_month_dict)
 	var jam_time_unix := Time.get_unix_time_from_datetime_dict(next_month_dict)
@@ -94,13 +96,17 @@ func _get_delta_time_until_jam() -> int:
 	var jam_time_unix := Time.get_unix_time_from_datetime_dict(jam_time_dict)
 	return jam_time_unix - current_time_unix
 
-func _get_countdown_string(delta_time : int) -> String:
-	var countdown_string : String = ""
+func _get_countdown_array(delta_time) -> Array[int] :
 	var countdown_array : Array[int]
 	countdown_array.append(delta_time / SECONDS_PER_DAY)
 	countdown_array.append((delta_time % SECONDS_PER_DAY ) / SECONDS_PER_HOUR)
 	countdown_array.append((delta_time % SECONDS_PER_DAY % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
 	countdown_array.append(delta_time % SECONDS_PER_DAY % SECONDS_PER_HOUR % SECONDS_PER_MINUTE)
+	return countdown_array
+
+func _get_countdown_string(delta_time : int, precision : int = default_precision) -> String:
+	var countdown_string : String = ""
+	var countdown_array := _get_countdown_array(delta_time)
 	var iter := -1
 	var displayed_count := 0
 	for countdown_value in countdown_array:
@@ -124,6 +130,27 @@ func _get_countdown_string(delta_time : int) -> String:
 		if displayed_count >= precision:
 			break
 	return countdown_string
+
+func _get_countdown_clock(delta_time : int) -> String:
+	var countdown_clock : String = ""
+	var countdown_array := _get_countdown_array(delta_time)
+	var iter := -1
+	for countdown_value in countdown_array:
+		iter += 1
+		match(iter):
+			0:
+				if countdown_value == 0: 
+					continue
+				countdown_clock += "%d Day" % countdown_value
+				if countdown_value > 1:
+					countdown_clock += "s"
+				countdown_clock += " :"
+			1, 2:
+				countdown_clock += "%02d :" % countdown_value
+			3:
+				countdown_clock += "%02d" % countdown_value
+		countdown_clock += " "
+	return countdown_clock
 
 func _unix_is_after_jam(unix_time : int) -> bool:
 	return unix_time > get_jam_time() + get_voting_time()
@@ -152,23 +179,31 @@ func get_current_stage() -> int:
 		return 0
 	return -1
 
+func set_stage_labels(text : String) -> void:
+	stage_label.text = text
+	stage_label_2.text = text
+
+func set_countdown_text(delta_time_unix : int, suffix : String = "") -> void:
+	countdown_button.text = _get_countdown_string(delta_time_unix) + suffix
+	countdown_label.text = _get_countdown_clock(delta_time_unix) + suffix
+
 func refresh_text() -> void:
 	var delta_time_unix := _get_delta_time_until_jam()
 	var stage := get_current_stage()
 	match(stage):
 		0:
-			stage_label.text = JAM_STAGE_STRING
+			set_stage_labels(JAM_STAGE_STRING)
 			delta_time_unix += get_jam_time()
 		1:
-			stage_label.text = VOTING_STAGE_STRING
+			set_stage_labels(VOTING_STAGE_STRING)
 			delta_time_unix += get_jam_time() + get_voting_time()
 		2:
 			# Today is passed the current month's jam. Get next months jam.
 			delta_time_unix = _get_delta_time_until_next_month_jam()
-			stage_label.text = DEFAULT_STAGE_STRING
+			set_stage_labels(DEFAULT_STAGE_STRING)
 		_:
-			stage_label.text = DEFAULT_STAGE_STRING
-	countdown_button.text = _get_countdown_string(delta_time_unix) + _append_adjusted_flag(stage)
+			set_stage_labels(DEFAULT_STAGE_STRING)
+	set_countdown_text(delta_time_unix, _append_adjusted_flag(stage))
 
 func _open_current_jam_page() -> void:
 	var current_time_dict := Time.get_datetime_dict_from_system(true)
