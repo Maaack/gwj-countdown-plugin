@@ -40,6 +40,8 @@ func _get_2nd_friday(day : int, weekday : int) -> int:
 	var weekday_diff := weekday - TARGET_WEEKDAY
 	var target_relative_day := (day - weekday_diff)
 	var target_first_day := target_relative_day % 7
+	if target_first_day == 0:
+		target_first_day = 7
 	var target_day = target_first_day + (7 * (TARGET_WEEKDAY_OCCURRENCE - 1))
 	return target_day
 
