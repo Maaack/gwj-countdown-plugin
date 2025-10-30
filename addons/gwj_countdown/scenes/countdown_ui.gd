@@ -38,6 +38,9 @@ const JAM_FIRST_YEAR = 2018
 @onready var stage_option = %StageOption
 @onready var day_adjustment = %DayAdjustment
 
+var _prev_jam_extension : int
+var _prev_voting_extension : int
+
 func _get_2nd_friday(day : int, weekday : int) -> int:
 	var weekday_diff := weekday - TARGET_WEEKDAY
 	var target_relative_day := (day - weekday_diff)
@@ -221,19 +224,34 @@ func _on_jam_icon_button_pressed() -> void:
 func _ready() -> void:
 	refresh_text()
 
+func _on_confirmation_dialog_canceled():
+		jam_extension = _prev_jam_extension
+		voting_extension = _prev_voting_extension
+
 func _reset_day_adjustment_value(stage_idx: int = 0) -> void:
 	match stage_idx:
 		0:
 			day_adjustment.value = jam_extension
+			day_adjustment.editable = true
 		1:
 			day_adjustment.value = voting_extension
+			day_adjustment.editable = true
 
 func _on_countdown_button_pressed() -> void:
+	_prev_jam_extension = jam_extension
+	_prev_voting_extension = voting_extension
 	stage_option.selected = get_current_stage()
 	_reset_day_adjustment_value(stage_option.selected)
 	confirmation_dialog.show()
 
 func _on_confirmation_dialog_confirmed() -> void:
+	match stage_option.selected:
+		0:
+			jam_extension = day_adjustment.value
+		1:
+			voting_extension = day_adjustment.value
+
+func _on_day_adjustment_value_changed(value):
 	match stage_option.selected:
 		0:
 			jam_extension = day_adjustment.value
