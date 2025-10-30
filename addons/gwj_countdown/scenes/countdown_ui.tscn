@@ -78,7 +78,6 @@ alignment = 1
 [node name="TextureRect" type="TextureRect" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-mouse_default_cursor_shape = 2
 texture = ExtResource("2_gybcw")
 expand_mode = 1
 stretch_mode = 5
@@ -99,7 +98,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="ConfirmationDialog/VBoxContainer"]
 layout_mode = 2
-text = "Adjust deadlines"
+text = "Adjust deadlines:"
 horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer"]
