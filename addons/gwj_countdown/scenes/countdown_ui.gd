@@ -4,7 +4,7 @@ extends Control
 const PROJECT_SETTINGS_PATH = "gwj_countdown/"
 const TARGET_WEEKDAY : = 5
 const TARGET_WEEKDAY_OCCURRENCE : int = 2
-const TARGET_HOUR := 20
+const TARGET_HOUR := 21
 const JAM_DAYS = 9
 const VOTING_DAYS = 7
 const SECONDS_PER_DAY = 86400
@@ -76,6 +76,8 @@ func _update_dict_to_months_jam(datetime_dict : Dictionary) -> Dictionary:
 	datetime_dict["day"] = jam_start_day
 	datetime_dict["weekday"] = TARGET_WEEKDAY
 	datetime_dict["hour"] = TARGET_HOUR
+	if datetime_dict["dst"]:
+		datetime_dict["hour"] -= 1
 	datetime_dict["minute"] = 0
 	datetime_dict["second"] = 0
 	return datetime_dict
