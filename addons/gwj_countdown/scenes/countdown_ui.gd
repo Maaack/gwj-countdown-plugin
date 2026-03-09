@@ -4,7 +4,7 @@ extends Control
 const PROJECT_SETTINGS_PATH = "gwj_countdown/"
 const TARGET_WEEKDAY : = 5
 const TARGET_WEEKDAY_OCCURRENCE : int = 2
-const TARGET_HOUR := 20
+const TARGET_HOUR := 21
 const JAM_DAYS = 9
 const VOTING_DAYS = 7
 const SECONDS_PER_DAY = 86400
@@ -44,6 +44,11 @@ var _prev_voting_extension : int
 func get_current_datetime() -> Dictionary:
 	return Time.get_datetime_dict_from_system(true)
 
+func get_target_hour() -> int:
+	if Time.get_datetime_dict_from_system()["dst"]:
+		return TARGET_HOUR - 1
+	return TARGET_HOUR
+
 func _get_2nd_friday(day : int, weekday : int) -> int:
 	var weekday_diff := weekday - TARGET_WEEKDAY
 	var target_relative_day := (day - weekday_diff)
@@ -78,7 +83,7 @@ func _update_dict_to_months_jam(datetime_dict : Dictionary) -> Dictionary:
 	var jam_start_day := _get_2nd_friday(datetime_dict["day"], datetime_dict["weekday"])
 	datetime_dict["day"] = jam_start_day
 	datetime_dict["weekday"] = TARGET_WEEKDAY
-	datetime_dict["hour"] = TARGET_HOUR
+	datetime_dict["hour"] = get_target_hour()
 	datetime_dict["minute"] = 0
 	datetime_dict["second"] = 0
 	return datetime_dict
