@@ -41,6 +41,14 @@ const JAM_FIRST_YEAR = 2018
 var _prev_jam_extension : int
 var _prev_voting_extension : int
 
+func get_current_datetime() -> Dictionary:
+	return Time.get_datetime_dict_from_system(true)
+
+func get_target_hour() -> int:
+	if Time.get_datetime_dict_from_system()["dst"]:
+		return TARGET_HOUR - 1
+	return TARGET_HOUR
+
 func _get_2nd_friday(day : int, weekday : int) -> int:
 	var weekday_diff := weekday - TARGET_WEEKDAY
 	var target_relative_day := (day - weekday_diff)
@@ -75,15 +83,13 @@ func _update_dict_to_months_jam(datetime_dict : Dictionary) -> Dictionary:
 	var jam_start_day := _get_2nd_friday(datetime_dict["day"], datetime_dict["weekday"])
 	datetime_dict["day"] = jam_start_day
 	datetime_dict["weekday"] = TARGET_WEEKDAY
-	datetime_dict["hour"] = TARGET_HOUR
-	if datetime_dict["dst"]:
-		datetime_dict["hour"] -= 1
+	datetime_dict["hour"] = get_target_hour()
 	datetime_dict["minute"] = 0
 	datetime_dict["second"] = 0
 	return datetime_dict
 
 func _get_delta_time_until_next_month_jam() -> int:
-	var current_time_dict := Time.get_datetime_dict_from_system(true)
+	var current_time_dict := get_current_datetime()
 	current_time_dict = adjust_datetime_dict(current_time_dict)
 	var current_time_unix := int(Time.get_unix_time_from_datetime_dict(current_time_dict))
 	var next_month_unix = current_time_unix + (DAYS_IN_FOUR_WEEKS * SECONDS_PER_DAY)
@@ -93,7 +99,7 @@ func _get_delta_time_until_next_month_jam() -> int:
 	return jam_time_unix - current_time_unix
 
 func _get_delta_time_until_jam() -> int:
-	var current_time_dict := Time.get_datetime_dict_from_system(true)
+	var current_time_dict := get_current_datetime()
 	current_time_dict = adjust_datetime_dict(current_time_dict)
 	var current_time_unix := Time.get_unix_time_from_datetime_dict(current_time_dict)
 	var jam_time_dict = current_time_dict.duplicate()
@@ -211,7 +217,7 @@ func refresh_text() -> void:
 	set_countdown_text(delta_time_unix, _append_adjusted_flag(stage))
 
 func _open_current_jam_page() -> void:
-	var current_time_dict := Time.get_datetime_dict_from_system(true)
+	var current_time_dict := get_current_datetime()
 	var month_diff = current_time_dict["month"] - JAM_FIRST_MONTH
 	var year_diff = current_time_dict["year"] - JAM_FIRST_YEAR
 	var current_jam_index = month_diff + (year_diff * 12) + 1
