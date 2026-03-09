@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dnvss1ily5njc"]
+[gd_scene format=3 uid="uid://dnvss1ily5njc"]
 
 [ext_resource type="Script" uid="uid://bj8krsdncedu6" path="res://addons/gwj_countdown/scenes/countdown_ui.gd" id="1_0bnqm"]
 [ext_resource type="Texture2D" uid="uid://b6pux56uv4ugl" path="res://addons/gwj_countdown/assets/gwj_mascot_icon_vector.svg" id="2_gybcw"]
@@ -8,7 +8,7 @@
 font_weight = 800
 subpixel_positioning = 0
 
-[node name="CountdownUI" type="Control"]
+[node name="CountdownUI" type="Control" unique_id=6784039]
 custom_minimum_size = Vector2(448, 0)
 layout_mode = 3
 anchors_preset = 15
@@ -18,7 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0bnqm")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=813804200]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,11 +28,11 @@ grow_vertical = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_right = 16
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1232571482]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="JamIconButton" type="TextureButton" parent="MarginContainer/HBoxContainer"]
+[node name="JamIconButton" type="TextureButton" parent="MarginContainer/HBoxContainer" unique_id=995003852]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -41,12 +41,12 @@ texture_hover = ExtResource("3_ndbey")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="StageLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="StageLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=177195130]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 2
 
-[node name="CountdownButton" type="Button" parent="MarginContainer/HBoxContainer"]
+[node name="CountdownButton" type="Button" parent="MarginContainer/HBoxContainer" unique_id=1344248992]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -54,16 +54,16 @@ theme_override_fonts/font = SubResource("SystemFont_jun1l")
 flat = true
 alignment = 0
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=1892692945]
 autostart = true
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=39041123]
 oversampling_override = 1.0
 title = "Deadline Details"
 initial_position = 1
 size = Vector2i(600, 360)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ConfirmationDialog"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ConfirmationDialog" unique_id=355568294]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 592.0
@@ -71,42 +71,42 @@ offset_bottom = 311.0
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer" unique_id=1821071360]
 layout_mode = 2
 alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2"]
+[node name="TextureRect" type="TextureRect" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2" unique_id=1954704138]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 texture = ExtResource("2_gybcw")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="StageLabel2" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2"]
+[node name="StageLabel2" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2" unique_id=1637732557]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Jam Begins"
 horizontal_alignment = 2
 
-[node name="CountdownLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2"]
+[node name="CountdownLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer2" unique_id=1420282548]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="ConfirmationDialog/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="ConfirmationDialog/VBoxContainer" unique_id=1488956341]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ConfirmationDialog/VBoxContainer"]
+[node name="Label" type="Label" parent="ConfirmationDialog/VBoxContainer" unique_id=151196862]
 layout_mode = 2
 text = "Adjust deadlines:"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ConfirmationDialog/VBoxContainer" unique_id=1248758436]
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="StageOption" type="OptionButton" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+[node name="StageOption" type="OptionButton" parent="ConfirmationDialog/VBoxContainer/HBoxContainer" unique_id=1242496693]
 unique_name_in_owner = true
 layout_mode = 2
 item_count = 2
@@ -115,17 +115,17 @@ popup/item_0/id = 0
 popup/item_1/text = "Voting"
 popup/item_1/id = 1
 
-[node name="PlusLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+[node name="PlusLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer" unique_id=380125333]
 layout_mode = 2
 text = "+"
 
-[node name="DayAdjustment" type="SpinBox" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+[node name="DayAdjustment" type="SpinBox" parent="ConfirmationDialog/VBoxContainer/HBoxContainer" unique_id=39741670]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 15.0
 editable = false
 
-[node name="DaysLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer"]
+[node name="DaysLabel" type="Label" parent="ConfirmationDialog/VBoxContainer/HBoxContainer" unique_id=1660333893]
 layout_mode = 2
 text = "Days"
 
