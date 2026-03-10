@@ -40,6 +40,7 @@ const JAM_FIRST_YEAR = 2018
 
 var _prev_jam_extension : int
 var _prev_voting_extension : int
+var checked_export_templates : bool = false
 
 func get_current_datetime() -> Dictionary:
 	return Time.get_datetime_dict_from_system(true)
@@ -198,6 +199,20 @@ func set_countdown_text(delta_time_unix : int, suffix : String = "") -> void:
 	countdown_button.text = _get_countdown_string(delta_time_unix) + suffix
 	countdown_label.text = _get_countdown_clock(delta_time_unix) + suffix
 
+func _check_export_templates() -> bool:
+	checked_export_templates = true
+	var version := Engine.get_version_info()
+	var version_string := "%s.%s." % [version["major"], version["minor"]]
+	if version["patch"] > 0:
+		version_string += "%s." % version["patch"]
+	version_string += "%s" % version["status"]
+	var data_dir := EditorPaths.new().get_data_dir()
+	if data_dir.is_empty() and OS.get_name() == "Linux":
+		data_dir = "~/.local/share/godot/"
+	var templates_path = data_dir.path_join("export_templates").path_join(version_string)
+	print(templates_path)
+	return DirAccess.dir_exists_absolute(templates_path)
+
 func refresh_text() -> void:
 	var delta_time_unix := _get_delta_time_until_jam()
 	var stage := get_current_stage()
@@ -205,6 +220,11 @@ func refresh_text() -> void:
 		0:
 			set_stage_labels(JAM_STAGE_STRING)
 			delta_time_unix += get_jam_time()
+			if delta_time_unix <= SECONDS_PER_DAY:
+				if _check_export_templates():
+					print("Export templates installed", )
+				else:
+					print("Export templates missing", )
 		1:
 			set_stage_labels(VOTING_STAGE_STRING)
 			delta_time_unix += get_jam_time() + get_voting_time()
@@ -272,7 +292,9 @@ func _on_stage_option_item_selected(index) -> void:
 func _enter_tree() -> void:
 	jam_extension = ProjectSettings.get_setting(PROJECT_SETTINGS_PATH + 'jam_extension', 0)
 	voting_extension = ProjectSettings.get_setting(PROJECT_SETTINGS_PATH + 'voting_extension', 0)
+	checked_export_templates = ProjectSettings.get_setting(PROJECT_SETTINGS_PATH + 'checked_export_templates', false)
 
 func _exit_tree() -> void:
 	ProjectSettings.set_setting(PROJECT_SETTINGS_PATH + 'jam_extension', jam_extension)
 	ProjectSettings.set_setting(PROJECT_SETTINGS_PATH + 'voting_extension', voting_extension)
+	ProjectSettings.set_setting(PROJECT_SETTINGS_PATH + 'checked_export_templates', checked_export_templates)
