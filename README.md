@@ -8,3 +8,7 @@ Answers the question...
 ![Jam Start Countdown](/addons/gwj_countdown/media/screenshot_1.png)  
 ![Jam End Countdown](/addons/gwj_countdown/media/screenshot_2.png)  
 ![Voting End Countdown](/addons/gwj_countdown/media/screenshot_3.png)  
+
+## Links
+[Godot Asset Library](https://godotengine.org/asset-library/asset/3919)  
+[License](LICENSE.txt)  
