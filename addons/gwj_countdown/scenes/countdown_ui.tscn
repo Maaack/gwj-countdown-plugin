@@ -129,6 +129,14 @@ editable = false
 layout_mode = 2
 text = "Days"
 
+[node name="ExportTemplatesDialog" type="AcceptDialog" parent="." unique_id=302810711]
+oversampling_override = 1.0
+title = "One Day Remaining"
+initial_position = 1
+size = Vector2i(716, 106)
+dialog_text = "There is less than 24 hours until the end of the jam and no Export Templates are detected. 
+It is recommended that you install Export Templates now."
+
 [connection signal="pressed" from="MarginContainer/HBoxContainer/JamIconButton" to="." method="_on_jam_icon_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/CountdownButton" to="." method="_on_countdown_button_pressed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
